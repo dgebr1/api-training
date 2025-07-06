@@ -1,55 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { usePostStore } from "../store/postStore";
 
 function Posts() {
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Mock data for posts
-  const mockPosts = [
-    {
-      id: 1,
-      title: 'Getting Started with React',
-      excerpt: 'Learn the basics of React and how to build your first component...',
-      author: 'John Doe',
-      date: '2024-01-15',
-      readTime: '5 min read'
-    },
-    {
-      id: 2,
-      title: 'Advanced JavaScript Concepts',
-      excerpt: 'Explore closures, promises, and other advanced JavaScript features...',
-      author: 'Jane Smith',
-      date: '2024-01-14',
-      readTime: '8 min read'
-    },
-    {
-      id: 3,
-      title: 'Building Scalable APIs',
-      excerpt: 'Best practices for designing and implementing RESTful APIs...',
-      author: 'Mike Johnson',
-      date: '2024-01-13',
-      readTime: '12 min read'
-    },
-    {
-      id: 4,
-      title: 'CSS Grid vs Flexbox',
-      excerpt: 'When to use CSS Grid and when to use Flexbox for layouts...',
-      author: 'Sarah Wilson',
-      date: '2024-01-12',
-      readTime: '6 min read'
-    }
-  ];
+  const postStore = usePostStore((state) => state);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setPosts(mockPosts);
-      setIsLoading(false);
-    }, 1000);
+    postStore.getPosts();
   }, []);
 
-  if (isLoading) {
+  if (postStore?.isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -79,21 +39,22 @@ function Posts() {
 
       {/* Posts Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* {JSON.stringify(postStore?.posts)} */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
+          {postStore?.posts.map((post) => (
             <article
               key={post.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="p-6">
                 <div className="flex items-center text-sm text-gray-500 mb-2">
-                  <span>{post.author}</span>
+                  <span>Some one</span>
                   <span className="mx-2">•</span>
-                  <span>{post.date}</span>
+                  <span>{new Date(post.createdAt).toISOString()}</span>
                   <span className="mx-2">•</span>
-                  <span>{post.readTime}</span>
+                  <span>8 min read</span>
                 </div>
-                
+
                 <h2 className="text-xl font-semibold text-gray-900 mb-3">
                   <Link
                     to={`/posts/${post.id}`}
@@ -102,11 +63,11 @@ function Posts() {
                     {post.title}
                   </Link>
                 </h2>
-                
+
                 <p className="text-gray-600 mb-4 line-clamp-3">
-                  {post.excerpt}
+                  {post.content}
                 </p>
-                
+
                 <Link
                   to={`/posts/${post.id}`}
                   className="text-indigo-600 hover:text-indigo-700 font-medium text-sm"
@@ -118,9 +79,11 @@ function Posts() {
           ))}
         </div>
 
-        {posts.length === 0 && (
+        {postStore?.posts.length === 0 && (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No posts yet
+            </h3>
             <p className="text-gray-600 mb-4">Be the first to create a post!</p>
             <Link
               to="/create-post"
@@ -135,4 +98,4 @@ function Posts() {
   );
 }
 
-export default Posts; 
+export default Posts;

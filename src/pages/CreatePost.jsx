@@ -1,48 +1,53 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { usePostStore } from "../store/postStore";
 
 function CreatePost() {
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    tags: ''
+    title: "",
+    content: "",
+    // tags: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+
+  const postStore = usePostStore((state) => state);
+  // const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-    setError(''); // Clear error when user types
+    setError(""); // Clear error when user types
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    // setIsLoading(true);
+    setError("");
 
     // Basic validation
     if (!formData.title.trim()) {
-      setError('Title is required');
-      setIsLoading(false);
+      setError("Title is required");
+      // setIsLoading(false);
       return;
     }
 
     if (!formData.content.trim()) {
-      setError('Content is required');
-      setIsLoading(false);
+      setError("Content is required");
+      // setIsLoading(false);
       return;
     }
 
+    postStore.createPost({ title: formData.title, content: formData.content });
+
     // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // For now, just navigate to posts page
-      navigate('/posts');
-    }, 1000);
+    // setTimeout(() => {
+    // setIsLoading(false);
+    // For now, just navigate to posts page
+    // navigate("/posts");
+    // }, 1000);
   };
 
   return (
@@ -51,7 +56,9 @@ function CreatePost() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Create New Post</h1>
-          <p className="mt-2 text-gray-600">Share your thoughts and ideas with the community.</p>
+          <p className="mt-2 text-gray-600">
+            Share your thoughts and ideas with the community.
+          </p>
         </div>
 
         {/* Form */}
@@ -66,7 +73,10 @@ function CreatePost() {
             <div className="space-y-6">
               {/* Title */}
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Title *
                 </label>
                 <input
@@ -82,7 +92,7 @@ function CreatePost() {
               </div>
 
               {/* Tags */}
-              <div>
+              {/* <div>
                 <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
                   Tags
                 </label>
@@ -98,11 +108,14 @@ function CreatePost() {
                 <p className="mt-1 text-sm text-gray-500">
                   Add relevant tags to help others find your post
                 </p>
-              </div>
+              </div> */}
 
               {/* Content */}
               <div>
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="content"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Content *
                 </label>
                 <textarea
@@ -124,17 +137,17 @@ function CreatePost() {
               <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                 <button
                   type="button"
-                  onClick={() => navigate('/posts')}
+                  onClick={() => navigate("/posts")}
                   className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={postStore?.loading}
                   className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'Publishing...' : 'Publish Post'}
+                  {postStore?.loading ? "Publishing..." : "Publish Post"}
                 </button>
               </div>
             </div>
@@ -143,9 +156,14 @@ function CreatePost() {
 
         {/* Help Section */}
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-2">Writing Tips</h3>
+          <h3 className="text-lg font-medium text-blue-900 mb-2">
+            Writing Tips
+          </h3>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• Start with a compelling title that clearly describes your content</li>
+            <li>
+              • Start with a compelling title that clearly describes your
+              content
+            </li>
             <li>• Use clear, concise language and break up long paragraphs</li>
             <li>• Include code examples when relevant</li>
             <li>• Add relevant tags to help others discover your post</li>
@@ -157,4 +175,4 @@ function CreatePost() {
   );
 }
 
-export default CreatePost; 
+export default CreatePost;
